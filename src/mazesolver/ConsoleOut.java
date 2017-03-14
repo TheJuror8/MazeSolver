@@ -45,7 +45,7 @@ public class ConsoleOut {
         +"╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝ ╚═════╝ ╚══════╝ ╚═══╝  ╚══════╝╚═╝  ╚═╝\n"
                                                                                     +CLOSE;
 
-      logo = returnCentredTxt(logo, 84, 7, 1);
+      logo = returnCentredTxt(logo, 85, 7, 1);
 
       //On reset l'état de la console
       resetConsole();
@@ -73,12 +73,19 @@ public class ConsoleOut {
     public static void afficheMap (MazeMap mapcp) {
       // Copie pour ne pas modifier mapcp dans le prg principal
       MazeMap map = mapcp;
+
+      // Autres variables utiles
       int[] dim = map.getDim();
-      int type;
+      int[] dep_arr;
+      NodeType type;
       String map2string = "";
 
-      // On remplace les cases départ et arrivée par des types "-2
-      map.getCase()
+      // On remplace les cases départ et arrivée par des types -2 : départ et -3 : arrivée
+      dep_arr = map.getSE();
+      if (dep_arr != null) {
+        map.getCase(dep_arr[0], dep_arr[1]).setType(NodeType.START); // case départ
+        map.getCase(dep_arr[2], dep_arr[3]).setType(NodeType.END); // case arrivée
+      }
 
       System.out.println (" "+GREEN_BG+"RENDU :"+CLOSE+" "+outTxtFile(map.img_adr));
 
@@ -86,12 +93,19 @@ public class ConsoleOut {
         for (int x = 0; x<dim[0]; x++){ //largeur
           type = map.getCase(x, y).getType();
 
-          if (type==-1)
-              map2string += RED+"88"+CLOSE;
-          else if (type==0)
-              map2string += "::";
-          else
-              map2string += "██";
+          switch (type) {
+            case NULL:
+              map2string += RED+"88"+CLOSE; break;
+            case EMPTY:
+              map2string += "::"; break;
+            case START:
+              map2string += GREEN_BG+"::"+CLOSE; break;
+            case END:
+              map2string += RED_BG+"::"+CLOSE; break;
+            case OBSTACLE:
+              map2string += "██"; break;
+          }
+
         }
         map2string+="\n";
       }

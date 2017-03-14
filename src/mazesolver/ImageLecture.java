@@ -37,9 +37,9 @@ public class ImageLecture {
             pix = new Color (result[y][x], false);
             hex = "#"+Integer.toHexString(pix.getRGB()).substring(2);
             if (hex.equals("#ffffff")) {// si la case est blanche
-              img_map.getCase(x, y).setType (0);
+              img_map.getCase(x, y).setType (NodeType.EMPTY);
             } else { // si elle est noire
-              img_map.getCase(x, y).setType (1);
+              img_map.getCase(x, y).setType (NodeType.OBSTACLE);
             }
           }
         }

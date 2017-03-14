@@ -12,10 +12,6 @@ import java.util.*;
  * @author slimh
  */
 public class MazeMap {
-    //Variables utiles à la résolution, à déplacer en local après
-    private ArrayList<Node> openlist;
-    private ArrayList<Node> closedlist;
-
     //Tableau 2D contenant toutes les nodes
     private Node[][] map;
     private int[] start, end; //positions de départ et d'arrivée
@@ -51,6 +47,15 @@ public class MazeMap {
         this.end = end;
 
         //Calcul du poids heuristique de chaque case
+        int hcout;
+        int[] end_c = new int[] {getSE()[2], getSE()[3]};
+
+        for (int y = 0; y<getDim()[1]; y++){ //hauteur
+          for (int x = 0; x<getDim()[0]; x++){ //largeur
+            hcout = Math.abs(strt[0] - x) + Math.abs(strt[1] - y);
+            this.getCase(x,y).setHCout (hcout);
+          }
+        }
     }
 
     /* Renvoie les coordonnées des cases départ et arrivée */
@@ -67,4 +72,39 @@ public class MazeMap {
     public int[] getDim() {
         return this.dim;
     }
+
+    /* Méthode A* de résolution du labyrinthe */
+    public boolean solveAStar () {
+      //Liste ouverte et liste fermée
+      private ArrayList<Node> openlist;
+      private ArrayList<Node> closedlist;
+
+      /* Note : ORDONNER LES LISTES PAR POIDS OPTIMISE L'ALGO*/
+
+      //On récupère les objets Node associés à la case de départ et d'arrivée
+      Node start_node = this.getCase (getSE()[0], getSE[1]);
+      Node end_node = this.getCase (getSE()[2], getSE[3]);
+
+      /* La case active est la case de départ
+         => variable inutile en soit, question de clarté du code */
+      Node active_node = start_node;
+
+      //On ajoute la case de départ à la liste fermée et on commence une boucle
+      closedList.add (start_node);
+
+      /* Si la case d'arrivée est ajoutée à la liste fermée
+         ou la liste ouverte est vide on sort de la boucle */
+      do {
+        // On ajoute les cases adjacentes qui ne sont pas dans la liste fermée
+        //    => interdire les mouvements diagonaux
+
+
+      } while (!openList.isEmpty() && !closedList.contains(end_node))
+
+
+
+    }
+
+
+
 }

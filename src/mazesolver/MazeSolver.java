@@ -38,15 +38,18 @@ public class MazeSolver {
         try {
             result = ImageLecture.chargerImage(img_adr);
             ConsoleOut.afficheMap (result);
+
             //Traitements à gérer dans un analyseur de prompt
             do {
                 System.out.print ("::msolv=> ");
                 klek = input.nextLine();
             } while (!klek.equals("setstart"));
 
-            //On définit la case départ et la case d'arrivée selon l'input de l'utilisateur
+            //On définit la case départ et la case d'arrivée selon l'input de l'utilisateur (en dur pour l'instant)
+            //  => on affiche la map après définition
             result.setSE(new int[] {1,1}, new int[] {25,28});
-            
+            ConsoleOut.afficheMap (result);
+
         } catch (IOException e) {
             ConsoleOut.outError ("Le fichier "+ConsoleOut.outTxtFile(img_adr)+" n'est pas disponible en lecture.");
         }
