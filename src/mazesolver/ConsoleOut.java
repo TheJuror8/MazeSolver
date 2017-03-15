@@ -70,22 +70,14 @@ public class ConsoleOut {
       System.out.println (" "+RED_BG+"ERREUR :"+CLOSE+" "+msg);
     }
 
-    public static void afficheMap (MazeMap mapcp) {
-      // Copie pour ne pas modifier mapcp dans le prg principal
-      MazeMap map = mapcp;
-
-      // Autres variables utiles
+    public static void afficheMap (MazeMap map) {
+      /* Diverses variables de traitement */
       int[] dim = map.getDim();
       int[] dep_arr;
+
       NodeType type;
       String map2string = "";
-
-      // On remplace les cases départ et arrivée par des types -2 : départ et -3 : arrivée
-      dep_arr = map.getSE();
-      if (dep_arr != null) {
-        map.getCase(dep_arr[0], dep_arr[1]).setType(NodeType.START); // case départ
-        map.getCase(dep_arr[2], dep_arr[3]).setType(NodeType.END); // case arrivée
-      }
+      boolean notSignaled = true;
 
       System.out.println (" "+GREEN_BG+"RENDU :"+CLOSE+" "+outTxtFile(map.img_adr));
 
@@ -95,7 +87,12 @@ public class ConsoleOut {
 
           switch (type) {
             case NULL:
-              map2string += RED+"88"+CLOSE; break;
+              map2string += RED+"88"+CLOSE;
+              if (notSignaled) {
+                outError ("Une ou plusieurs nodes indéfinies ont été trouvées : le parsing de l'image comporte des erreurs.");
+                notSignaled = false;
+              }
+              break;
             case EMPTY:
               map2string += "::"; break;
             case START:
@@ -104,6 +101,8 @@ public class ConsoleOut {
               map2string += RED_BG+"::"+CLOSE; break;
             case OBSTACLE:
               map2string += "██"; break;
+            case PATH:
+              map2string += YELLOW_BG+"::"+CLOSE; break;
           }
 
         }
@@ -116,6 +115,10 @@ public class ConsoleOut {
 
     public static String outTxtFile (String filen) {
       return (WHITE_BG+BLACK+"{"+filen+"}"+CLOSE);
+    }
+
+    public static void outNotice (String txt) {
+      System.out.println (" "+YELLOW_BG+"NOTICE :"+CLOSE+" "+txt);
     }
 
 
@@ -139,7 +142,7 @@ public class ConsoleOut {
             UnixTerminal console = new UnixTerminal();
             console.setEchoEnabled(true);
         } catch (Exception e) {
-            outError ("Erreur lors de l'activation de l'echo.");
+            outError ("Erreur lors de l'activation de l'echo console.");
         }
     }
 

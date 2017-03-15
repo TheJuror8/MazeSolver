@@ -50,6 +50,16 @@ public class MazeSolver {
             result.setSE(new int[] {1,1}, new int[] {25,28});
             ConsoleOut.afficheMap (result);
 
+            //Traitements à gérer dans un analyseur de prompt
+            do {
+                System.out.print ("::msolv=> ");
+                klek = input.nextLine();
+            } while (!klek.equals("solve"));
+
+            //On résout le labyrinthe avec l'algorithme A*
+            ConsoleOut.outNotice(result.solveAStar() ? "Solution trouvée !" : "Aucune solution trouvée");
+            ConsoleOut.afficheMap (result);
+
         } catch (IOException e) {
             ConsoleOut.outError ("Le fichier "+ConsoleOut.outTxtFile(img_adr)+" n'est pas disponible en lecture.");
         }
