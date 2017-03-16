@@ -20,7 +20,7 @@ public class MazeSolver {
      */
     public static void main(String[] args) {
         //fichier à ouvrir en dur pour l'instant
-        String img_adr = "maze_img/maze_01.bmp", hex;
+        String img_adr = "maze_img/maze_01.bmp";
         Scanner input = new Scanner(System.in);
         MazeMap result;
 
@@ -47,7 +47,8 @@ public class MazeSolver {
 
             //On définit la case départ et la case d'arrivée selon l'input de l'utilisateur (en dur pour l'instant)
             //  => on affiche la map après définition
-            result.setSE(new int[] {1,1}, new int[] {25,28});
+            result.setSE(new int[] {1,1}, new int[] {26,28});
+            //result.setSE(new int[] {215,1}, new int[] {215,475});
             ConsoleOut.afficheMap (result);
 
             //Traitements à gérer dans un analyseur de prompt
