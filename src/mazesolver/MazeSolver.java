@@ -6,63 +6,61 @@
 package mazesolver;
 
 import java.io.*;
-import java.util.Scanner;
+import java.util.*;
+import scala.tools.jline.*;
+import scala.tools.jline.console.ConsoleReader;
+import scala.tools.jline.console.completer.Completer;
+
 
 /**
  *
  * @author habib
  */
 public class MazeSolver {
-    public static String VERS = "0.1";
+    public static String VERS = "0.3";
+    public static MazeMap current;
+    public static ConsoleReader xterm;
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        //fichier à ouvrir en dur pour l'instant
-        String img_adr = "maze_img/maze_01.bmp";
-        Scanner input = new Scanner(System.in);
-        MazeMap result;
+        /* Chaîne pour l'input principal */
+        String intxt = "";
 
-        //Affichage console
-        ConsoleOut.ShowLoader();
+        /* Création des compléteurs jline */
+        final ArrayList<Completer> autocmp_list = ConsoleOut.getCompleter();
 
-        String klek;
-
-        //Traitements à gérer dans un analyseur de prompt
-        do {
-            System.out.print ("::msolv=> ");
-            klek = input.nextLine();
-        } while (!klek.equals("load"));
-
+        /* Gestion du prompt, de l'historique et de l'auto-complétion avec jline */
         try {
-            result = ImageLecture.chargerImage(img_adr);
-            ConsoleOut.afficheMap (result);
+            xterm = new ConsoleReader();
 
-            //Traitements à gérer dans un analyseur de prompt
-            do {
-                System.out.print ("::msolv=> ");
-                klek = input.nextLine();
-            } while (!klek.equals("setstart"));
+            /* Ajout de tous les completers à jline */
+            for (Completer cmp : autocmp_list) {
+              xterm.addCompleter(cmp);
+            }
 
-            //On définit la case départ et la case d'arrivée selon l'input de l'utilisateur (en dur pour l'instant)
-            //  => on affiche la map après définition
-            result.setSE(new int[] {1,1}, new int[] {26,28});
-            //result.setSE(new int[] {215,1}, new int[] {215,475});
-            ConsoleOut.afficheMap (result);
+            /* Définition du prompt */
+            xterm.setPrompt(" :msolv> ");
 
-            //Traitements à gérer dans un analyseur de prompt
-            do {
-                System.out.print ("::msolv=> ");
-                klek = input.nextLine();
-            } while (!klek.equals("solve"));
+            /* Affichage de l'écran console d'accueuil */
+            ConsoleOut.ShowLoader();
 
-            //On résout le labyrinthe avec l'algorithme A*
-            ConsoleOut.outNotice(result.solveAStar() ? "Solution trouvée !" : "Aucune solution trouvée");
-            ConsoleOut.afficheMap (result);
-
+            while ((intxt = xterm.readLine()) != null) {
+              SyntaxHandler.instrRead (intxt);
+            }
         } catch (IOException e) {
-            ConsoleOut.outError ("Le fichier "+ConsoleOut.outTxtFile(img_adr)+" n'est pas disponible en lecture.");
+            e.printStackTrace();
+        } finally {
+            try {
+                TerminalFactory.get().restore();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+
+        /* Réactivation de l'écho console */
+        ConsoleOut.enableEcho();
     }
+
 }

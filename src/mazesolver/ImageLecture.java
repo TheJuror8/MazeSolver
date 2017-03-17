@@ -17,18 +17,18 @@ import java.awt.Color;
  */
 public class ImageLecture {
 
-    public static MazeMap chargerImage (String img_location) throws IOException {
+    public static MazeMap chargerImage (File img_location) throws IOException {
         // Variables locales utiles
         BufferedImage img_buffer;
         MazeMap img_map;
         Color pix;
         String hex;
 
-        img_buffer = ImageIO.read(new File (img_location));
+        img_buffer = ImageIO.read(img_location);
 
         int[][] result = bufferTo2D (img_buffer);
 
-        img_map = new MazeMap(result.length, result[0].length, img_location); // on crée une nouvelle map de dimension appropriée
+        img_map = new MazeMap(result.length, result[0].length, img_location.getPath()); // on crée une nouvelle map de dimension appropriée
 
         for (int y = 0; y<result.length; y++){
           for (int x = 0; x<result[y].length; x++){

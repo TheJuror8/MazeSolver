@@ -5,30 +5,36 @@
  */
 package mazesolver;
 
+import java.util.*;
 import scala.tools.jline.TerminalFactory;
 import scala.tools.jline.UnixTerminal;
+import scala.tools.jline.console.completer.FileNameCompleter;
+import scala.tools.jline.console.completer.StringsCompleter;
+import scala.tools.jline.console.completer.Completer;
 
 /**
  *
  * @author habib
  */
 public class ConsoleOut {
-    //Déclaration des balises de style ANSI
-    private static final String CLOSE = "\u001B[0m";
-    private static final String BLACK = "\u001B[30m";
-    private static final String RED = "\u001B[31m";
-    private static final String GREEN = "\u001B[32m";
-    private static final String YELLOW = "\u001B[33m";
-    private static final String BLUE = "\u001B[34m";
-    private static final String PURPLE = "\u001B[35m";
-    private static final String CYAN = "\u001B[36m";
-    private static final String WHITE = "\u001B[37m";
-    /* => codes couleur pour un fond de texte */
+    /* Déclaration des balises de style ANSI */
+    public static final String CLOSE = "\u001B[0m";
+    public static final String BLACK = "\u001B[30m";
+    public static final String RED = "\u001B[31m";
+    public static final String GREEN = "\u001B[92m";
+    public static final String YELLOW = "\u001B[93m";
+    public static final String BLUE = "\u001B[94m";
+    public static final String PURPLE = "\u001B[35m";
+    public static final String CYAN = "\u001B[36m";
+    public static final String WHITE = "\u001B[37m";
+    /* Autres styles de texte */
     public static final String RED_BG = "\u001B[41m";
     public static final String GREEN_BG = "\u001B[42m";
     public static final String YELLOW_BG = "\u001B[43m";
     public static final String BLUE_BG = "\u001B[44m";
     public static final String WHITE_BG	= "\u001B[47m";
+    public static final String UNDERLINE	= "\u001b[4m";
+    public static final String BOLD	= "\u001b[1m";
 
     //Affichage de l'écran d'accueil
     public static void ShowLoader() {
@@ -47,27 +53,28 @@ public class ConsoleOut {
 
       logo = returnCentredTxt(logo, 85, 7, 1);
 
-      //On reset l'état de la console
-      resetConsole();
-
       //On affiche le résultat en ConsoleOut
       System.out.print (logo);
-      System.out.println (" MazeSolver version "+ MazeSolver.VERS);
-      System.out.println (" Entrez /h pour obtenir de l'aide");
+      System.out.println (" MazeSolver - Terminal based maze solver");
+      System.out.println (" Entrez "+GREEN+".help"+CLOSE+" pour obtenir de l'aide");
     }
 
-    //Reset de la console
-    public static void resetConsole() {
-        try {
-            UnixTerminal console_pointer = new UnixTerminal();
-            console_pointer.restore();
-        } catch (Exception e) {
-            outError ("Erreur lors du reset de la console.");
-        }
-    }
+    public static ArrayList<Completer> getCompleter() {
+      ArrayList<Completer> autocmp_list = new ArrayList();
+      autocmp_list.addAll(Arrays.asList(
+        new StringsCompleter("load"),
+        new StringsCompleter("display"),
+        new StringsCompleter("save >>"),
+        new StringsCompleter("solve --"),
+        new StringsCompleter("setpath"),
+        new StringsCompleter(".help"),
+        new StringsCompleter(".exit"),
+        new StringsCompleter(".about"),
+        new StringsCompleter(".exit"),
+        new StringsCompleter(".clear"),
+        new FileNameCompleter()));
 
-    public static void outError (String msg) {
-      System.out.println (" "+RED_BG+"ERREUR :"+CLOSE+" "+msg);
+      return autocmp_list;
     }
 
     public static void afficheMap (MazeMap map) {
@@ -89,7 +96,7 @@ public class ConsoleOut {
             case NULL:
               map2string += RED+"88"+CLOSE;
               if (notSignaled) {
-                outError ("Une ou plusieurs nodes indéfinies ont été trouvées : le parsing de l'image comporte des erreurs.");
+                outError ("display", "une ou plusieurs nodes indéfinies ont été trouvées : le parsing de l'image comporte des erreurs.");
                 notSignaled = false;
               }
               break;
@@ -121,6 +128,50 @@ public class ConsoleOut {
       System.out.println (" "+YELLOW_BG+"NOTICE :"+CLOSE+" "+txt);
     }
 
+    public static void outNotice (String cmd, String msg) {
+      System.out.println (" "+YELLOW_BG+"<<"+cmd+" :"+CLOSE+" "+msg);
+    }
+
+    public static void outError (String cmd, String msg) {
+      System.out.println (" "+RED_BG+"<<"+cmd+" :"+CLOSE+" "+msg);
+    }
+
+    public static void outVersion() {
+      //on a le droit de rêver
+      System.out.println ("\n     "+GREEN+"GitHub Project - "+BLUE+"http://github.com/TheJuror8/MazeSolver"+CLOSE
+                          +GREEN+"\n     MazeSolver Copyright (C) 2017 - Habib Slim\n"+CLOSE);
+    }
+
+    public static void outHelp () {
+      String helptxt = String.join ("\n", "\n"
+      , "     "+YELLOW+"load <file>"+CLOSE+"     : Permet de charger un labyrinthe BMP/JPG en mémoire"
+      , "     "+YELLOW+"display"+CLOSE+"         : Affiche en console le dernier labyrinthe chargé"
+      , "     "+YELLOW+"solve --alg"+CLOSE+"     : Résout le labyrinthe avec la méthode spécifiée en paramètre"
+      , "                       => algorithmes implémentés : --a*, TODO"
+      , "     "+YELLOW+"setpath a:b,c:d"+CLOSE+" : Définit les points de départ et d'arrivée du labyrinthe"
+      , "                       => exemple : 1:1,20:20"
+      , "     "+  GREEN+".help"+CLOSE+"           : Affiche cette fenêtre d'aide"
+      , "     "+  GREEN+".about"+CLOSE+"          : Affiche des infos complémentaires sur le logiciel"
+      , "     "+  GREEN+".exit"+CLOSE+"           : Ferme MazeSolver"
+      , "     "+  GREEN+".clear"+CLOSE+"          : Vide le terminal\n\n");
+      System.out.println (helptxt);
+    }
+
+    //Nettoyage de la console
+    public static void flushScreen () {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+
+    //Activation de l'écho console
+    public static void enableEcho () {
+        try {
+            UnixTerminal console = new UnixTerminal();
+            console.setEchoEnabled(true);
+        } catch (Exception e) {
+            outError ("global", "Erreur lors de l'activation de l'echo console.");
+        }
+    }
 
     //Méthodes internes à la classse
     //==================================
@@ -132,24 +183,8 @@ public class ConsoleOut {
       dim[1] = TerminalFactory.get().getHeight();
 
       //On réactive l'echo console
-      enableEcho();
+      //enableEcho();
       return dim;
-    }
-
-    //Activation de l'écho
-    private static void enableEcho () {
-        try {
-            UnixTerminal console = new UnixTerminal();
-            console.setEchoEnabled(true);
-        } catch (Exception e) {
-            outError ("Erreur lors de l'activation de l'echo console.");
-        }
-    }
-
-    //Nettoyage de la console
-    private static void flushScreen () {
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
     }
 
     /* Retourne une version centrée dans la console d'une chaîne de caractères.
