@@ -1,7 +1,6 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Note : https://www.dyclassroom.com/image-processing-project/how-to-get-and-set-pixel-value-in-java
+ *   WOW : http://www.astrolog.org/labyrnth/daedalus.htm
  */
 package mazesolver;
 

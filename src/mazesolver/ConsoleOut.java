@@ -64,7 +64,7 @@ public class ConsoleOut {
       autocmp_list.addAll(Arrays.asList(
         new StringsCompleter("load"),
         new StringsCompleter("display"),
-        new StringsCompleter("save >>"),
+        new StringsCompleter("save"),
         new StringsCompleter("solve --"),
         new StringsCompleter("setpath"),
         new StringsCompleter(".help"),
@@ -148,6 +148,7 @@ public class ConsoleOut {
       , "     "+YELLOW+"display"+CLOSE+"         : Affiche en console le dernier labyrinthe chargé"
       , "     "+YELLOW+"solve --alg"+CLOSE+"     : Résout le labyrinthe avec la méthode spécifiée en paramètre"
       , "                       => algorithmes implémentés : --a*, TODO"
+      , "     "+YELLOW+"save <file>"+CLOSE+"     : Enregistre le buffer image actif dans le fichier spécifié"
       , "     "+YELLOW+"setpath a:b,c:d"+CLOSE+" : Définit les points de départ et d'arrivée du labyrinthe"
       , "                       => exemple : 1:1,20:20"
       , "     "+  GREEN+".help"+CLOSE+"           : Affiche cette fenêtre d'aide"

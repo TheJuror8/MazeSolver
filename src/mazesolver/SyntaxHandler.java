@@ -71,7 +71,43 @@ public class SyntaxHandler {
             MazeSolver.xterm.setPrompt(" :msolv> ");
             break syntaxcheck; //Les paramètres supplémentaires sont ignorés
 
-          // case "save" : A FAIRE !!!
+          case "save" :
+            if (MazeSolver.current != null) {
+              String fout;
+
+              //On modifie le prompt pour signaler à l'utilisateur d'entrer un nom de fichier
+              MazeSolver.xterm.setPrompt(" :msolv>save>> ");
+
+              //On lit la ligne suivante pour récupérer le nom de fichier
+              try {
+                fout = MazeSolver.xterm.readLine();
+              } catch (IOException e) {
+                e.printStackTrace();
+                break syntaxcheck;
+              }
+
+              fout = fout.trim(); //on nettoie les espaces dûs à l'auto-complétion
+
+              File imgin = new File (MazeSolver.current.img_adr);
+              File imgout = new File (fout);
+
+              if (imgin.exists() &&  !imgin.isDirectory()) {
+                try {
+                  ImageLecture.saveBuffer (imgin, imgout, MazeSolver.current);
+                  ConsoleOut.outNotice ("save", "le buffer actif a été enregistré dans le fichier "+ConsoleOut.outTxtFile(fout)+" avec succès !");
+                } catch (IOException e) {
+                  ConsoleOut.outError ("save", "impossible d'enregistrer le fichier à l'adresse spécifiée, vérifiez que vous disposez des autorisations en écriture pour ce répertoire.");
+                }
+              }
+              else {
+                ConsoleOut.outError ("save", "l'image précédemment chargée en buffer n'est plus lisible.");
+              }
+              // On reset le prompt
+              MazeSolver.xterm.setPrompt(" :msolv> ");
+            } else {
+                ConsoleOut.outError ("save", "aucun labyrinthe n'a été chargé en mémoire.");
+            }
+            break syntaxcheck; //Les paramètres supplémentaires sont ignorés
 
           case "solve":
             if (MazeSolver.current != null) {
@@ -93,7 +129,7 @@ public class SyntaxHandler {
                 ConsoleOut.outError ("solve", "les nodes de départ et d'arrivée n'ont pas été définies pour ce labyrinthe. ");
               }
             } else {
-              ConsoleOut.outError ("solve", "aucun labyrinthe n'est chargé en mémoire.");
+              ConsoleOut.outError ("solve", "aucun labyrinthe n'a été chargé en mémoire.");
             }
             break syntaxcheck;
 
@@ -141,7 +177,7 @@ public class SyntaxHandler {
                       ConsoleOut.outError ("setpath", "les coordonnées données sortent de l'image.");
                   } else if ((MazeSolver.current.getCase(strtend[0], strtend[1]).getType() == NodeType.OBSTACLE) ||
                                     (MazeSolver.current.getCase(strtend[2], strtend[3]).getType() == NodeType.OBSTACLE)) {
-                      ConsoleOut.outError ("setpath", "les coordonnées données sont celles de cases parsées comme bstacles.");
+                      ConsoleOut.outError ("setpath", "les coordonnées données sont celles de cases parsées comme obstacles.");
                   } else {
                       MazeSolver.current.setSE(new int[] {strtend[0], strtend[1]}, new int[] {strtend[2], strtend[3]});
                       ConsoleOut.outNotice ("setpath", "coordonnées de départ et d'arrivée définies avec succès.");
