@@ -60,8 +60,8 @@ public class SyntaxHandler {
               try {
                 MazeSolver.current = ImageLecture.chargerImage(imgsrc);
                 ConsoleOut.outNotice ("load", "le fichier "+ConsoleOut.outTxtFile(fpath)+" a été chargé et parsé avec succès.");
-              } catch (IOException e) {
-                ConsoleOut.outError ("load", "mauvais format de fichier, impossible de lire l'image fournie en paramètre.");
+              } catch (Exception e) {
+                ConsoleOut.outError ("load", "mauvais format de fichier, impossible de lire l'image fournie en paramètre.\n Exception : "+e.getMessage());
               }
             }
             else {

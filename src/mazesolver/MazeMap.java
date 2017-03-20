@@ -46,8 +46,18 @@ public class MazeMap {
     /* Définit les coordonnées des cases de départ et d'arrivée = {x,y}
        Calcule les poids heuristiques de chaque case en conséquence */
     public void setSE (int[] start, int [] end) {
+        if (getSE()!=null) {
+          // On vide les anciennes cases start et end
+          this.getCase(getSE()[0], getSE()[1]).setType(NodeType.EMPTY); // case départ
+          this.getCase(getSE()[2], getSE()[3]).setType(NodeType.EMPTY); // case arrivée
+        }
+
         this.start = start;
         this.end = end;
+
+        // On donne le nouveau type aux nouvelles cases départ\arrivée
+        this.getCase(getSE()[0], getSE()[1]).setType(NodeType.START); // case départ
+        this.getCase(getSE()[2], getSE()[3]).setType(NodeType.END); // case arrivée
 
         //Calcul du poids heuristique (H) de chaque case
         int hcout;
@@ -60,9 +70,6 @@ public class MazeMap {
           }
         }
 
-        // On remplace les cases départ et arrivée par des type départ et arrivée
-        this.getCase(getSE()[0], getSE()[1]).setType(NodeType.START); // case départ
-        this.getCase(getSE()[2], getSE()[3]).setType(NodeType.END); // case arrivée
     }
 
     /* Getters
@@ -75,8 +82,17 @@ public class MazeMap {
       else return null;
     }
 
+    /* Renvoie les coordonnées de la case correspondante
+        ou une case avec un type obstacle sinon les coordonnées sont invalides*/
     public Node getCase (int x, int y) {
+      int largeur = this.dim[0];
+      int hauteur = this.dim[1];
+
+      if (((x<largeur)&&(x>=0))&& ((y>=0) && (y<hauteur))) {
         return this.map[y][x];
+      } else {
+        return new Node (NodeType.OBSTACLE);
+      }
     }
 
     public int[] getDim() {
@@ -116,18 +132,18 @@ public class MazeMap {
       /* Si la case d'arrivée est ajoutée à la liste fermée
          ou la liste ouverte est vide on sort de la boucle */
       do {
+        openlist.remove(active_node);
+
         // On ajoute les cases adjacentes à la case active
         // qui ne sont pas dans la liste fermée et qui ne sont pas obstacles
         //    => interdire les mouvements diagonaux
         for (int[] i : dep) {
           adj_node = this.getCase (active_node.coord[0]+i[0], active_node.coord[1]+i[1]);
-          adj_node.coord = new int[] {active_node.coord[0]+i[0], active_node.coord[1]+i[1]};
 
           /* Si la case n'est ni dans la liste ouverte, ni dans la liste fermée
             et qu'elle n'est pas obstacle, alors : */
-          if (!((closedlist.contains(adj_node) || openlist.contains(adj_node))
-                                               || (adj_node.getType() == NodeType.OBSTACLE))) {
-
+          if (!((closedlist.contains(adj_node) || openlist.contains(adj_node)) || (adj_node.getType() == NodeType.OBSTACLE))) {
+            adj_node.coord = new int[] {active_node.coord[0]+i[0], active_node.coord[1]+i[1]};
             adj_node.setGCout(10 + active_node.getGCout()); // déplacement vertical\horizontal additionné du cout en déplacement de la case active
             adj_node.setParent(active_node); //on définit comme parent pour cette node la case active
             openlist.add (adj_node); // on ajoute la case à la liste ouverte
@@ -145,9 +161,7 @@ public class MazeMap {
           }
         }
 
-        openlist.remove(active_node);
         closedlist.add(active_node);
-
 
       } while (!(openlist.isEmpty() || closedlist.contains(end_node)));
 

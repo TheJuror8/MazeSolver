@@ -25,7 +25,7 @@ public class MazeSolver {
      */
     public static void main(String[] args) {
         /* Chaîne pour l'input principal */
-        String intxt = "";
+        String intxt;
 
         /* Création des compléteurs jline */
         final ArrayList<Completer> autocmp_list = ConsoleOut.getCompleter();
