@@ -1,51 +1,69 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package mazesolver;
 
-/**
- *
- * @author habib
- */
+import java.awt.*;
+import java.awt.event.*;
+import java.io.File;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+
 public class justatest {
+    
+    private static JFrame frame;
+    private static final String CACHE_F = "/temp/buff01.bmp";
+    
+    private static void imgPop (MazeMap currmap, JFrame frame) {
+        try {
+            //On copie et enregistre le buffer actif dans un fichier temporaire
+            File imageFile = new File (CACHE_F);
+            ImageLecture.saveBuffer (new File(currmap.img_adr), imageFile, currmap);
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        // TODO code application logic here
+            //On récupère la dimension active de l'écran
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-        int a = 255;
-        int r = 22;
-        int g = 225;
-        int b = 25;
+            Image imgbuff = ImageIO.read(imageFile);
+            imgbuff = imgbuff.getScaledInstance(700, 700, java.awt.Image.SCALE_DEFAULT);
+            ImageIcon image = new ImageIcon(imgbuff);
+            JLabel emptyLabel = new JLabel(image);
+            emptyLabel.setPreferredSize(new Dimension(700, 700));
 
-        //set the pixel value
-        int p = (a<<24) | (r<<16) | (g<<8) | b;
+            frame.getContentPane().add(emptyLabel);
 
-        System.out.println ("VERT : "+p);// TODO code application logic here
+            int x = (screenSize.width - frame.getSize().width)/2;
+            int y = (screenSize.height - frame.getSize().height)/2;
 
-        a = 255;
-        r = 242;
-        g = 44;
-        b = 26;
+            frame.setLocation(x, y);
 
-        //set the pixel value
-        p = (a<<24) | (r<<16) | (g<<8) | b;
+            frame.pack();
+            frame.setVisible(true);
+            
+        } catch (Exception e) {
+            ConsoleOut.outError("imgpop", "impossible de charger l'image source. Exception : "+e.getMessage());
+        }
 
-        System.out.println ("ROUGE : "+p);
-
-        a = 255;
-        r = 255;
-        g = 215;
-        b = 0;
-
-        //set the pixel value
-        p = (a<<24) | (r<<16) | (g<<8) | b;
-
-        System.out.println ("CHEMIN : "+p);
     }
+    
+    
+    private static void createGUI() {
+        frame = new JFrame(" ");
+        
+        WindowListener exitListener = new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                //On supprime la fenêtre JFrame
+                frame.dispose();               
+            }
+        };
+        
+        frame.addWindowListener(exitListener);
+   }
 
+    public static void main(String[] args) {
+        createGUI();
+        
+        try {
+            imgPop (MazeSolver.current, frame);
+        } catch (Exception e) {
+            ConsoleOut.outError("imgpop", "impossible de charger l'image source. Exception : "+e.getMessage());
+        }
+    }
 }

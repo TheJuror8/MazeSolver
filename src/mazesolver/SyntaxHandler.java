@@ -71,6 +71,21 @@ public class SyntaxHandler {
             MazeSolver.xterm.setPrompt(" :msolv> ");
             break syntaxcheck; //Les paramètres supplémentaires sont ignorés
 
+          case "imgpop":
+            if (MazeSolver.current != null) {
+              ImagePop.createGUI();
+
+              try {
+                  ImagePop.imgPop (MazeSolver.current);
+              } catch (Exception e) {
+                  ConsoleOut.outError("imgpop", "impossible de charger l'image source.\n Exception : "+e.getMessage());
+              }
+            } else {
+                ConsoleOut.outError ("imgpop", "le buffer actif est vide.");
+            }
+
+            break syntaxcheck;
+
           case "save" :
             if (MazeSolver.current != null) {
               String fout;

@@ -55,17 +55,45 @@ public class ImageLecture {
         img_buffer = ImageIO.read(img_location);
 
         int[][] result = bufferTo2D (img_buffer);
+        
+        //positions de départ et d'arrivée
+        int[] start = new int[] {-1, -1};
+        int[] end = new int[] {-1, -1};;
 
         img_map = new MazeMap(result.length, result[0].length, img_location.getPath()); // on crée une nouvelle map de dimension appropriée
 
         for (int y = 0; y<result.length; y++){
           for (int x = 0; x<result[y].length; x++){
-            if (result[y][x]==-1) {// si la case est blanche
-              img_map.getCase(x, y).setType (NodeType.EMPTY);
-            } else { // si elle est noire
-              img_map.getCase(x, y).setType (NodeType.OBSTACLE);
-            }
+              switch (result[y][x]) {
+                  case -1:
+                      // si la case est blanche
+                      img_map.getCase(x, y).setType (NodeType.EMPTY);
+                      break;
+                  case -10496:
+                      // si la case fait partie du chemin
+                      img_map.getCase(x, y).setType (NodeType.PATH);
+                      break;
+                  case -15277799:
+                      // si c'est une node de départ
+                      img_map.getCase(x, y).setType (NodeType.START);
+                      start = new int[] {x,y};
+                      break;
+                  case -906214:
+                      // si c'est une node de fin
+                      img_map.getCase(x, y).setType (NodeType.END);
+                      end = new int[] {x,y};
+                      break;
+                  default:
+                      // si elle est noire
+                      img_map.getCase(x, y).setType (NodeType.OBSTACLE);
+                      break;
+              }
           }
+        }
+        
+        //Si une fin et un début ont été trouvés, alors on les place
+        if ((start[0] != -1) && (end[0] != -1)) {
+            img_map.setSE(start, end);
         }
 
         return img_map;
