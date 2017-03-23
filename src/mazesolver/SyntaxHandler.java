@@ -37,7 +37,7 @@ public class SyntaxHandler {
             System.exit(0);
             break;
 
-          /* Commandes principales */
+          /* Instructions principales */
           case "load":
             String fpath;
 
@@ -58,9 +58,17 @@ public class SyntaxHandler {
 
             if (imgsrc.exists() &&  !imgsrc.isDirectory()) {
               try {
+                /* On parse le labyrinthe donné en paramètre */
                 MazeSolver.current = ImageLecture.chargerImage(imgsrc);
+
+                /* Création préemptive de la GUI pour le JFrame
+                    si la précédente a été détruite ou n'a jamais été créée */
+                if (!ImagePop.isDisplayable()) {
+                  ImagePop.createGUI(fpath);
+                }
+
                 ConsoleOut.outNotice ("load", "le fichier "+ConsoleOut.outTxtFile(fpath)+" a été chargé et parsé avec succès.");
-              } catch (Exception e) {
+              } catch (IOException e) {
                 ConsoleOut.outError ("load", "mauvais format de fichier, impossible de lire l'image fournie en paramètre.\n Exception : "+e.getMessage());
               }
             }
@@ -73,7 +81,10 @@ public class SyntaxHandler {
 
           case "imgpop":
             if (MazeSolver.current != null) {
-              ImagePop.createGUI();
+              /* Si la GUI a été détruite, alors elle est recréée */
+              if (!ImagePop.isDisplayable()) {
+                ImagePop.createGUI(MazeSolver.current.img_adr);
+              }
 
               try {
                   ImagePop.imgPop (MazeSolver.current);
@@ -82,6 +93,19 @@ public class SyntaxHandler {
               }
             } else {
                 ConsoleOut.outError ("imgpop", "le buffer actif est vide.");
+            }
+
+            break syntaxcheck;
+
+          case "initmap":
+            if (MazeSolver.current != null) {
+              if (MazeSolver.current.getSE()!= null) {
+                MazeSolver.current.clearMaze();
+              } else {
+                  ConsoleOut.outError ("initmap", "aucun chemin ou case de départ ou d'arrivée n'ont été définis.");
+              }
+            } else {
+              ConsoleOut.outError ("initmap", "aucun labyrinthe n'a été chargé en mémoire.");
             }
 
             break syntaxcheck;
@@ -103,15 +127,14 @@ public class SyntaxHandler {
 
               fout = fout.trim(); //on nettoie les espaces dûs à l'auto-complétion
 
-              File imgin = new File (MazeSolver.current.img_adr);
               File imgout = new File (fout);
 
-              if (imgin.exists() &&  !imgin.isDirectory()) {
+              if (new File(MazeSolver.current.img_adr).exists()) {
                 try {
-                  ImageLecture.saveBuffer (imgin, imgout, MazeSolver.current);
+                  ImageLecture.saveBuffer (MazeSolver.current, imgout);
                   ConsoleOut.outNotice ("save", "le buffer actif a été enregistré dans le fichier "+ConsoleOut.outTxtFile(fout)+" avec succès !");
                 } catch (IOException e) {
-                  ConsoleOut.outError ("save", "impossible d'enregistrer le fichier à l'adresse spécifiée, vérifiez que vous disposez des autorisations en écriture pour ce répertoire.");
+                  ConsoleOut.outError ("save", "impossible d'enregistrer le fichier à l'adresse spécifiée, vérifiez que le fichier source du labyrinthe n'a pas été modifié.");
                 }
               }
               else {
@@ -129,7 +152,7 @@ public class SyntaxHandler {
               if (MazeSolver.current.getSE() != null) {
                 if (i!=split.length-1) {
                   switch (split[i+1]) {
-                    case "--a*":
+                    case "-a*":
                       ConsoleOut.outNotice("solve::A*", MazeSolver.current.solveAStar() ? "solution trouvée !" : "aucune solution trouvée");
                       break;
                     // more to come...
@@ -207,7 +230,9 @@ public class SyntaxHandler {
             break syntaxcheck;
 
           default:
-            ConsoleOut.outError ("syntax", "erreur de syntaxe, aucune commande ne correspond à : « "+split[i]+" ».");
+            if (split [i].trim()!= "") {
+                ConsoleOut.outError ("syntax", "erreur de syntaxe, aucune commande ne correspond à : « "+split[i]+" ».");
+            }
             break syntaxcheck;
         }
       }

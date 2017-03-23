@@ -10,7 +10,7 @@ package mazesolver;
  * @author slimh
  */
 public class Node {
-    private NodeType type; //-1 si indéfini, 0 si vide, 1 si obstacle, 2 si chemin
+    private NodeType type; // types de nodes définies par énumération
     private int h_cout, g_cout;
     private Node parent;
 

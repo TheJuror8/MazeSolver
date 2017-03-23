@@ -66,7 +66,8 @@ public class ConsoleOut {
         new StringsCompleter("display"),
         new StringsCompleter("save"),
         new StringsCompleter("imgpop"),
-        new StringsCompleter("solve --"),
+        new StringsCompleter("initmap"),
+        new StringsCompleter("solve -"),
         new StringsCompleter("setpath"),
         new StringsCompleter(".help"),
         new StringsCompleter(".exit"),
@@ -145,18 +146,20 @@ public class ConsoleOut {
 
     public static void outHelp () {
       String helptxt = String.join ("\n", "\n"
-      , "     "+YELLOW+"load <file>"+CLOSE+"     : Permet de charger un labyrinthe BMP/JPG en mémoire"
+      , "     "+YELLOW+"load >> file"+CLOSE+"    : Permet de charger un labyrinthe BMP/JPG en mémoire"
       , "     "+YELLOW+"display"+CLOSE+"         : Affiche en console le dernier labyrinthe chargé"
-      , "     "+YELLOW+"imgpop"+CLOSE+"          : Affiche un rendu image du buffer courant"
-      , "     "+YELLOW+"solve --alg"+CLOSE+"     : Résout le labyrinthe avec la méthode spécifiée en paramètre"
-      , "                       => algorithmes implémentés : --a*, TODO"
-      , "     "+YELLOW+"save <file>"+CLOSE+"     : Enregistre le buffer image actif dans le fichier spécifié"
+      , "     "+YELLOW+"imgpop"+CLOSE+"          : Affiche un rendu fenêtré du buffer courant"
+      , "     "+YELLOW+"solve -alg"+CLOSE+"      : Résout le labyrinthe avec la méthode spécifiée en paramètre"
+      , "                       => algorithmes implémentés : -a*, TODO"
+      , "     "+YELLOW+"save >> file"+CLOSE+"    : Enregistre le buffer image actif dans le fichier spécifié"
       , "     "+YELLOW+"setpath a:b,c:d"+CLOSE+" : Définit les points de départ et d'arrivée du labyrinthe"
-      , "                       => exemple : 1:1,20:20 \n"
-      , "     "+  GREEN+".help"+CLOSE+"           : Affiche cette fenêtre d'aide"
+      , "                       => exemple : 1:1,20:20"
+      , "     "+YELLOW+"initmap"+CLOSE+"         : Réinitialise le labyrinthe chargé en mémoire"
+      , "                       => vide les cases de départ et d'arrivée et efface les chemins calculés \n"
       , "     "+  GREEN+".about"+CLOSE+"          : Affiche des infos complémentaires sur le logiciel"
       , "     "+  GREEN+".exit"+CLOSE+"           : Ferme MazeSolver"
-      , "     "+  GREEN+".clear"+CLOSE+"          : Vide le terminal\n\n");
+      , "     "+  GREEN+".clear"+CLOSE+"          : Vide le terminal"
+      , "     "+  GREEN+".help"+CLOSE+"           : Affiche ce dialogue\n\n");
       System.out.println (helptxt);
     }
 

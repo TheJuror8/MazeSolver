@@ -83,7 +83,7 @@ public class MazeMap {
     }
 
     /* Renvoie les coordonnées de la case correspondante
-        ou une case avec un type obstacle sinon les coordonnées sont invalides*/
+        ou une case avec un type obstacle si les coordonnées sont invalides*/
     public Node getCase (int x, int y) {
       int largeur = this.dim[0];
       int hauteur = this.dim[1];
@@ -102,9 +102,32 @@ public class MazeMap {
 
     /* Autres méthodes publiques
     =============================*/
+    /* Réinitialise le labyrinthe */
+    public void clearMaze() {
+      /* On parcourt le MazeMap et pour chaque case en PATH\START\END on remplace par EMPTY */
+      for (int y = 0; y<dim[1]; y++){ //hauteur
+        for (int x = 0; x<dim[0]; x++){ //largeur
+          Node currcase = this.getCase(x, y);
+          NodeType type = currcase.getType();
+
+          /* Plutôt qu'un if = or if = or ... */
+          switch (type) {
+            case PATH:
+            case START:
+            case END:
+              currcase.setType (NodeType.EMPTY);
+              break;
+          }
+        }
+      }
+
+      /* On vide les champs de départ et d'arrivée */
+      this.start = null;
+      this.end = null;
+    }
 
     /* Méthode A* de résolution du labyrinthe */
-    public boolean solveAStar () {
+    public boolean solveAStar() {
       //Liste ouverte et liste fermée
       ArrayList<Node> openlist = new ArrayList();
       ArrayList<Node> closedlist = new ArrayList();

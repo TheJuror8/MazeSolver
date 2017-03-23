@@ -9,7 +9,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.*;
 import javax.imageio.ImageIO;
-import java.awt.Color;
 
 /**
  *
@@ -17,14 +16,17 @@ import java.awt.Color;
  */
 public class ImageLecture {
 
-    public static void saveBuffer (File img_src, File img_name, MazeMap solved_maze) throws IOException {
+    /* Renvoie le buffer image du labyrinthe passé en paramètres */
+    public static BufferedImage getBuffer (MazeMap solved_maze) throws IOException {
       // Variables locales utiles
       BufferedImage img_buffer;
       int[] dim = solved_maze.getDim();
       NodeType type;
 
-      // On charge en mémoire l'image donnée en source
-      img_buffer = ImageIO.read(img_src);
+      /* On charge en mémoire l'image source du labyrinthe
+        => plutôt que d'écrire simplement les pixels noirs et blancs
+          dans l'optique ou des setups de labyrinthe plus complexes seront utilisés par le futur   */
+      img_buffer = ImageIO.read(new File (solved_maze.img_adr));
 
       // On parcourt le MazeMap et pour chaque case en PATH\START\END on change le pixel correspondant sur le buffer
       for (int y = 0; y<dim[1]; y++){ //hauteur
@@ -43,8 +45,15 @@ public class ImageLecture {
       }
 
       // On écrit le buffer de l'image modifiée dans le fichier img_src
-      ImageIO.write(img_buffer, "bmp", img_name);
+      return img_buffer;
+    }
 
+    public static void saveBuffer (MazeMap solved_maze, File img_name) throws IOException {
+      // On récupère le buffer associé au labyrinthe actif
+      BufferedImage img_buffer = getBuffer(solved_maze);
+
+      // On écrit le buffer de l'image modifiée dans le fichier img_src
+      ImageIO.write(img_buffer, "bmp", img_name);
     }
 
     public static MazeMap chargerImage (File img_location) throws IOException {
@@ -55,7 +64,7 @@ public class ImageLecture {
         img_buffer = ImageIO.read(img_location);
 
         int[][] result = bufferTo2D (img_buffer);
-        
+
         //positions de départ et d'arrivée
         int[] start = new int[] {-1, -1};
         int[] end = new int[] {-1, -1};;
@@ -90,7 +99,7 @@ public class ImageLecture {
               }
           }
         }
-        
+
         //Si une fin et un début ont été trouvés, alors on les place
         if ((start[0] != -1) && (end[0] != -1)) {
             img_map.setSE(start, end);
