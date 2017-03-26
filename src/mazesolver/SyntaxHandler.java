@@ -172,15 +172,16 @@ public class SyntaxHandler {
 
             File imgout = new File (fout);
 
-            if (new File(MazeSolver.current.img_adr).exists()) {
+            if (fout.length()<2) {
+              ConsoleOut.outError ("save", "adresse de fichier spécifiée invalide.");
+            } else if (new File(MazeSolver.current.img_adr).exists()) {
               try {
                 ImageLecture.saveBuffer (MazeSolver.current, imgout);
                 ConsoleOut.outNotice ("save", "le buffer actif a été enregistré dans le fichier "+ConsoleOut.outTxtFile(fout)+" avec succès !");
-              } catch (IOException e) {
-                ConsoleOut.outError ("save", "impossible d'enregistrer le fichier à l'adresse spécifiée, vérifiez que le fichier source du labyrinthe n'a pas été modifié.");
+              } catch (Exception e) {
+                ConsoleOut.outError ("save", "impossible d'enregistrer le fichier à l'adresse spécifiée, vérifiez que le fichier source du labyrinthe n'a pas été modifié.\n Exception : "+e.getMessage());
               }
-            }
-            else {
+            } else {
               ConsoleOut.outError ("save", "l'image précédemment chargée en buffer n'est plus lisible.");
             }
             // On reset le prompt
@@ -235,12 +236,10 @@ public class SyntaxHandler {
         case "setpath":
           if (MazeSolver.current != null) {
             if (split.length>1) {
-              //On découpe la chaîne d'instruction par (:) et (,)
-              String[] coord = split[1].split("(:)|(,)");
 
               //L'expression régulière ici vérifie que les coordonnées ont été données dans le bon format
               //   => http://regexr.com/ = goldmine
-              if ((coord.length < 4) || !split[1].matches("(\\d+):(\\d+),(\\d+):(\\d+)"))  {
+              if (!split[1].matches("(\\d+):(\\d+),(\\d+):(\\d+)")) {
                 ConsoleOut.outError ("setpath", "erreur de syntaxe : « "+split[1]+" » ne correspond pas aux coordonnées de deux points.");
               } else {
                 /* On récupère les coordonnées et on vérifie qu'elles rentrent dans le MazeMap */
@@ -248,6 +247,9 @@ public class SyntaxHandler {
                 int[] strtend = new int[4];
                 int[] mapdim = MazeSolver.current.getDim();
                 int n = 0;
+
+                //On découpe la chaîne d'instruction par (:) et (,)
+                String[] coord = split[1].split("(:)|(,)");
 
                 // => on convertit les chaînes en integer
                 // => on vérifie que les coordonnées rentrent dans la map
@@ -284,6 +286,7 @@ public class SyntaxHandler {
           /* Définit automatiquement les cases de départ et de fin
               => pour les labyrinthes générés sous Daedalus         */
           if (MazeSolver.current != null) {
+            if (MazeSolver.current.getSE()==null) {
               int[] dim = MazeSolver.current.getDim();
 
               //positions de départ et d'arrivée
@@ -311,8 +314,11 @@ public class SyntaxHandler {
               } else {
                 MazeSolver.current.setSE(start, end);
                 refreshImg("autopath");
-                ConsoleOut.outNotice ("autopath", "points d'entrées ajoutés avec succès. coordonnées : S("+start[0]+":"+start[1]+"), E("+end[0]+":"+end[1]+") .");
+                ConsoleOut.outNotice ("autopath", "points d'entrée ajoutés avec succès. coordonnées : S("+start[0]+":"+start[1]+"), E("+end[0]+":"+end[1]+") .");
               }
+            } else {
+              ConsoleOut.outError ("autopath", "le labyrinthe chargé en mémoire possède déjà des points d'entrée.");
+            }
 
           } else {
               ConsoleOut.outError ("autopath", "aucun labyrinthe n'est chargé en mémoire.");
