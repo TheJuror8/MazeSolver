@@ -142,8 +142,8 @@ public class SyntaxHandler {
           if (MazeSolver.current != null) {
             if (MazeSolver.current.getSE()!= null) {
               MazeSolver.current.clearMaze();
-              //refreshImg("initmap");
-              ConsoleOut.outError ("initmap", "contenu du labyrinthe vidé. (visible uniquement en mode console)");
+              refreshImg("initmap");
+              ConsoleOut.outError ("initmap", "contenu du labyrinthe vidé.");
             } else {
                 ConsoleOut.outError ("initmap", "aucun chemin ou case de départ ou d'arrivée n'ont été définis.");
             }
