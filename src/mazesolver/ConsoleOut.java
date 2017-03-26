@@ -69,6 +69,7 @@ public class ConsoleOut {
         new StringsCompleter("initmap"),
         new StringsCompleter("solve -"),
         new StringsCompleter("setpath"),
+        new StringsCompleter("autopath"),
         new StringsCompleter(".help"),
         new StringsCompleter(".exit"),
         new StringsCompleter(".about"),
@@ -126,12 +127,12 @@ public class ConsoleOut {
       return (WHITE_BG+BLACK+"{"+filen+"}"+CLOSE);
     }
 
-    public static void outNotice (String txt) {
-      System.out.println (" "+YELLOW_BG+"NOTICE :"+CLOSE+" "+txt);
+    public static void outWarning (String cmd, String msg) {
+      System.out.println (" "+YELLOW_BG+"<<"+cmd+" :"+CLOSE+" "+msg);
     }
 
     public static void outNotice (String cmd, String msg) {
-      System.out.println (" "+YELLOW_BG+"<<"+cmd+" :"+CLOSE+" "+msg);
+      System.out.println (" "+GREEN_BG+"<<"+cmd+" :"+CLOSE+" "+msg);
     }
 
     public static void outError (String cmd, String msg) {
@@ -139,21 +140,23 @@ public class ConsoleOut {
     }
 
     public static void outVersion() {
-      //on a le droit de rêver
       System.out.println ("\n     "+GREEN+"GitHub Project - "+BLUE+"http://github.com/TheJuror8/MazeSolver"+CLOSE
                           +GREEN+"\n     MazeSolver Copyright (C) 2017 - Habib Slim\n"+CLOSE);
     }
 
     public static void outHelp () {
       String helptxt = String.join ("\n", "\n"
-      , "     "+YELLOW+"load >> file"+CLOSE+"    : Permet de charger un labyrinthe BMP/JPG en mémoire"
+      , "     "+YELLOW+"load >> file"+CLOSE+"    : Permet de charger un fichier labyrinthe RVB en mémoire"
       , "     "+YELLOW+"display"+CLOSE+"         : Affiche en console le dernier labyrinthe chargé"
-      , "     "+YELLOW+"imgpop"+CLOSE+"          : Affiche un rendu fenêtré du buffer courant"
+      , "     "+YELLOW+"imgpop [ratio]"+CLOSE+"  : Affiche un rendu fenêtré du buffer courant"
+      , "                       => ratio d'affichage du labyrinthe, par défaut x10"
       , "     "+YELLOW+"solve -alg"+CLOSE+"      : Résout le labyrinthe avec la méthode spécifiée en paramètre"
       , "                       => algorithmes implémentés : -a*, TODO"
       , "     "+YELLOW+"save >> file"+CLOSE+"    : Enregistre le buffer image actif dans le fichier spécifié"
       , "     "+YELLOW+"setpath a:b,c:d"+CLOSE+" : Définit les points de départ et d'arrivée du labyrinthe"
       , "                       => exemple : 1:1,20:20"
+      , "     "+YELLOW+"autopath"+CLOSE+"        : Définit automatiquement les points E/S du labyrinthe"
+      , "                       => méthode de choix pour les images générées par Daedalus"
       , "     "+YELLOW+"initmap"+CLOSE+"         : Réinitialise le labyrinthe chargé en mémoire"
       , "                       => vide les cases de départ et d'arrivée et efface les chemins calculés \n"
       , "     "+  GREEN+".about"+CLOSE+"          : Affiche des infos complémentaires sur le logiciel"
@@ -183,13 +186,11 @@ public class ConsoleOut {
     //==================================
 
     //Renvoie les dimensions de la console
-    private static int[] getConsoleDim () {
+    public static int[] getConsoleDim () {
       int[] dim = new int[2];
       dim[0] = TerminalFactory.get().getWidth();
       dim[1] = TerminalFactory.get().getHeight();
 
-      //On réactive l'echo console
-      //enableEcho();
       return dim;
     }
 

@@ -1,135 +1,137 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+* To change this license header, choose License Headers in Project Properties.
+* To change this template file, choose Tools | Templates
+* and open the template in the editor.
+*/
 package mazesolver;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.*;
+import java.io.ByteArrayOutputStream;
 import javax.imageio.ImageIO;
 
 /**
- *
- * @author habib
- */
+*
+* @author habib
+*/
 public class ImageLecture {
 
-    /* Renvoie le buffer image du labyrinthe passé en paramètres */
-    public static BufferedImage getBuffer (MazeMap solved_maze) throws IOException {
-      // Variables locales utiles
-      BufferedImage img_buffer;
-      int[] dim = solved_maze.getDim();
-      NodeType type;
+  /* Renvoie le buffer image du labyrinthe passé en paramètres */
+  public static BufferedImage getBuffer (MazeMap solved_maze) throws IOException {
+    // Variables locales utiles
+    BufferedImage img_buffer;
+    int[] dim = solved_maze.getDim();
+    NodeType type;
 
-      /* On charge en mémoire l'image source du labyrinthe
-        => plutôt que d'écrire simplement les pixels noirs et blancs
-          dans l'optique ou des setups de labyrinthe plus complexes seront utilisés par le futur   */
-      img_buffer = ImageIO.read(new File (solved_maze.img_adr));
+    /* On charge en mémoire l'image source du labyrinthe
+    => plutôt que d'écrire simplement les pixels noirs et blancs
+    dans l'optique ou des setups de labyrinthe plus complexes seront utilisés par le futur   */
+    img_buffer = ImageIO.read(new File (solved_maze.img_adr));
 
-      // On parcourt le MazeMap et pour chaque case en PATH\START\END on change le pixel correspondant sur le buffer
-      for (int y = 0; y<dim[1]; y++){ //hauteur
-        for (int x = 0; x<dim[0]; x++){ //largeur
-          type = solved_maze.getCase(x, y).getType();
+    // On parcourt le MazeMap et pour chaque case en PATH\START\END on change le pixel correspondant sur le buffer
+    for (int y = 0; y<dim[1]; y++){ //hauteur
+      for (int x = 0; x<dim[0]; x++){ //largeur
+        type = solved_maze.getCase(x, y).getType();
 
-          switch (type) {
-            case PATH:
-              img_buffer.setRGB (x, y, -10496); break; // couleur RGB int dorée
-            case START:
-              img_buffer.setRGB (x, y, -15277799); break; // couleur RGB int vert
-            case END:
-              img_buffer.setRGB (x, y, -906214); break; // couleur RGB int rouge
-          }
+        switch (type) {
+          case PATH:
+            img_buffer.setRGB (x, y, -10496); break; // couleur RGB int dorée
+          case START:
+            img_buffer.setRGB (x, y, -15277799); break; // couleur RGB int vert
+          case END:
+            img_buffer.setRGB (x, y, -906214); break; // couleur RGB int rouge
         }
       }
-
-      // On écrit le buffer de l'image modifiée dans le fichier img_src
-      return img_buffer;
     }
 
-    public static void saveBuffer (MazeMap solved_maze, File img_name) throws IOException {
-      // On récupère le buffer associé au labyrinthe actif
-      BufferedImage img_buffer = getBuffer(solved_maze);
+    // On écrit le buffer de l'image modifiée dans le fichier img_src
+    return img_buffer;
+  }
 
-      // On écrit le buffer de l'image modifiée dans le fichier img_src
-      ImageIO.write(img_buffer, "bmp", img_name);
-    }
+  public static void saveBuffer (MazeMap solved_maze, File img_name) throws IOException {
+    // On récupère le buffer associé au labyrinthe actif
+    BufferedImage img_buffer = getBuffer(solved_maze);
 
-    public static MazeMap chargerImage (File img_location) throws IOException {
-        // Variables locales utiles
-        BufferedImage img_buffer;
-        MazeMap img_map;
+    // On écrit le buffer de l'image modifiée dans le fichier img_src
+    ImageIO.write(img_buffer, "bmp", img_name);
+  }
 
-        img_buffer = ImageIO.read(img_location);
+  public static MazeMap chargerImage (File img_location) throws IOException {
+    // Variables locales utiles
+    BufferedImage img_buffer;
+    MazeMap img_map;
 
-        int[][] result = bufferTo2D (img_buffer);
+    img_buffer = ImageIO.read(img_location);
 
-        //positions de départ et d'arrivée
-        int[] start = new int[] {-1, -1};
-        int[] end = new int[] {-1, -1};;
+    int[][] result = bufferTo2D (img_buffer);
 
-        img_map = new MazeMap(result.length, result[0].length, img_location.getPath()); // on crée une nouvelle map de dimension appropriée
+    //positions de départ et d'arrivée
+    int[] start = new int[] {-1, -1};
+    int[] end = new int[] {-1, -1};;
 
-        for (int y = 0; y<result.length; y++){
-          for (int x = 0; x<result[y].length; x++){
-              switch (result[y][x]) {
-                  case -1:
-                      // si la case est blanche
-                      img_map.getCase(x, y).setType (NodeType.EMPTY);
-                      break;
-                  case -10496:
-                      // si la case fait partie du chemin
-                      img_map.getCase(x, y).setType (NodeType.PATH);
-                      break;
-                  case -15277799:
-                      // si c'est une node de départ
-                      img_map.getCase(x, y).setType (NodeType.START);
-                      start = new int[] {x,y};
-                      break;
-                  case -906214:
-                      // si c'est une node de fin
-                      img_map.getCase(x, y).setType (NodeType.END);
-                      end = new int[] {x,y};
-                      break;
-                  default:
-                      // si elle est noire
-                      img_map.getCase(x, y).setType (NodeType.OBSTACLE);
-                      break;
-              }
-          }
+    img_map = new MazeMap(result.length, result[0].length, img_location.getPath()); // on crée une nouvelle map de dimension appropriée
+
+    for (int y = 0; y<result.length; y++){
+      for (int x = 0; x<result[y].length; x++){
+        switch (result[y][x]) {
+          case -1:
+          // si la case est blanche
+            img_map.getCase(x, y).setType (NodeType.EMPTY);
+            break;
+          case -10496:
+          // si la case fait partie du chemin
+            img_map.getCase(x, y).setType (NodeType.PATH);
+            break;
+          case -15277799:
+          // si c'est une node de départ
+            img_map.getCase(x, y).setType (NodeType.START);
+            start = new int[] {x,y};
+            break;
+          case -906214:
+          // si c'est une node de fin
+            img_map.getCase(x, y).setType (NodeType.END);
+            end = new int[] {x,y};
+            break;
+          default:
+          // si elle est noire
+            img_map.getCase(x, y).setType (NodeType.OBSTACLE);
+            break;
         }
-
-        //Si une fin et un début ont été trouvés, alors on les place
-        if ((start[0] != -1) && (end[0] != -1)) {
-            img_map.setSE(start, end);
-        }
-
-        return img_map;
+      }
     }
 
+    //Si une fin et un début ont été trouvés, alors on les place
+    if ((start[0] != -1) && (end[0] != -1)) {
+      img_map.setSE(start, end);
+    }
 
-    public static int[][] bufferTo2D(BufferedImage image) {
-        final byte[] pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
-        final int width = image.getWidth();
-        final int height = image.getHeight();
+    return img_map;
+  }
 
-        int[][] result = new int[height][width];
-        final int pixelLength = 3;
-        for (int pixel = 0, row = 0, col = 0; pixel < pixels.length; pixel += pixelLength) {
-            int argb = 0;
-            argb += -16777216; // 255 alpha
-            argb += ((int) pixels[pixel] & 0xff); // blue
-            argb += (((int) pixels[pixel + 1] & 0xff) << 8); // green
-            argb += (((int) pixels[pixel + 2] & 0xff) << 16); // red
-            result[row][col] = argb;
-            col++;
-            if (col == width) {
-               col = 0;
-               row++;
-            }
-         }
 
-         return result;
-   }
+  private static int[][] bufferTo2D(BufferedImage image) throws IOException {
+    final byte[] pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+    final int width = image.getWidth();
+    final int height = image.getHeight();
+
+    int[][] result = new int[height][width];
+    final int pixelLength = 3;
+    for (int pixel = 0, row = 0, col = 0; pixel < pixels.length; pixel += pixelLength) {
+      int argb = 0;
+      argb += -16777216; // 255 alpha
+      argb += ((int) pixels[pixel] & 0xff); // bleu
+      argb += (((int) pixels[pixel + 1] & 0xff) << 8); // vert
+      argb += (((int) pixels[pixel + 2] & 0xff) << 16); // rouge
+      result[row][col] = argb;
+      col++;
+      if (col == width) {
+        col = 0;
+        row++;
+      }
+    }
+
+    return result;
+  }
+
 }

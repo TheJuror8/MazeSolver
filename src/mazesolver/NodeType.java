@@ -5,6 +5,6 @@ public enum NodeType {
   EMPTY,    /* Case vide */
   OBSTACLE, /* Obstacle */
   PATH,     /* Chemin */
-  START,    /* Case départ => uniquement en affichage */
-  END       /* Case d'arrivée => uniquement en affichage */
+  START,    /* Case départ */
+  END       /* Case d'arrivée */
 }

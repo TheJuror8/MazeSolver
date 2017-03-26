@@ -20,7 +20,7 @@ public class MazeMap {
     private final int[] dim = new int[2];
 
     //Nom du fichier associé
-    public String img_adr;
+    public final String img_adr;
 
     MazeMap (int hauteur, int largeur, String img_adr) {
         this.dim[0] = largeur;
@@ -69,7 +69,6 @@ public class MazeMap {
             this.getCase(x,y).setHCout (hcout);
           }
         }
-
     }
 
     /* Getters

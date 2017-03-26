@@ -1,0 +1,15 @@
+===================================================================================================================
+
+Dans ce dossier vous pourrez trouver quelques exemples de labyrinthes BMP\PNG qui fonctionnent bien avec MazeSolver.
+La plupart de ces labyrinthes ont été générés sur Daedalus, un programme gratuit que vous pouvez trouver ici :
+=>	http://www.astrolog.org/labyrnth/daedalus.htm
+
+Pour pouvoir charger des images en mode RVB pixel par pixel :
+			+ convertir les images en RVB + colorimétrie absolue
+			+ inverser les couleurs : parfois nécessaire si l'image est générée par Daedalus qui considère le noir comme chemin
+			et le blanc comme obstacle, à l'inverse de MSolver
+
+Toutes les images de ce dossier sont directement accessibles depuis MSolver. Pour utiliser des images provenant
+d'autres emplacements, vous pouvez utiliser un chemin absolu.
+
+===================================================================================================================
